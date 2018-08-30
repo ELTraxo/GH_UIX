@@ -30,6 +30,7 @@ public:
 	NativeWindowPtr CreateNativeWindow( vec2i pos, vec2ui size, bool bShow = true );
 	WindowPtr CreateStandaloneWindow( vec2i pos, vec2ui size );
 	NativeWindows GetNativeWindows();
+	NativeWindowPtr GetNativeWindowByHandle( HWND hWnd );
 
 	bool InitializeRenderer();
 	bool InitializeRenderer(DevicePtr pD3dDevice);

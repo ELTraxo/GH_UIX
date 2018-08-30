@@ -4,6 +4,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 {
 	auto uix = UIX::Create( hInstance, false );
 	auto pWindow = uix->CreateStandaloneWindow( { 5,50 }, { 400,300 } );
+	auto pWindow2 = uix->CreateStandaloneWindow( { 415,50 }, { 400,300 } );
 
 	if ( pWindow )
 	{

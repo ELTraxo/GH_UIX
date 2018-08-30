@@ -33,48 +33,6 @@ LRESULT WINAPI UIX::WndProcUIX( HWND hWnd, uint msg, WPARAM wParam, LPARAM lPara
 
 LRESULT WINAPI UIX::WndProcUIXSA( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam )
 {
-	//case WM_MOUSEMOVE:
-	//case WM_LBUTTONDOWN:
-	//case WM_LBUTTONUP:
-	//{
-	//	if ( pUIX )
-	//	{
-	//		auto vWindows = pUIX->GetNativeWindows();
-	//		for ( auto pWindow : vWindows )
-	//		{
-	//			if ( pWindow->GetCanvas()->GetIsStandalone() )
-	//			{
-	//				switch ( msg )
-	//				{
-	//					case WM_MOUSEMOVE:
-	//					{
-	//						auto xWindow = pWindow->GetCanvas()->GetChildren();
-	//						if ( std::dynamic_pointer_cast<Window>( xWindow )->IsMoving() )
-	//						{
-	//							auto mdp = std::dynamic_pointer_cast<Window>( xWindow )->GetMouseDownPos();
-	//							POINT p{ 0 };
-	//							GetCursorPos( &p );
-	//							int newX = p.x - mdp.x;
-	//							int newY = p.y - mdp.y;
-	//							SetWindowPos( pWindow->GetHWND(), 0, newX, newY, 0, 0, SWP_NOSIZE );
-	//							pWindow->SetPos( { newX, newY } );
-	//						}
-	//						break;
-	//					}
-	//				}
-	//			}
-
-	//			auto pCanvas = pWindow->GetCanvas();
-	//			if ( pCanvas->PostMsg( msg, wParam, lParam, nullptr ) )
-	//				break;
-
-	//		}
-	//		break;
-	//	}
-	//}
-
-
-
 	switch ( msg )
 	{
 		case WM_DESTROY:
@@ -107,7 +65,8 @@ LRESULT WINAPI UIX::WndProcUIXSA( HWND hWnd, uint msg, WPARAM wParam, LPARAM lPa
 			if ( pUIX )
 			{
 				auto vWindows = pUIX->GetNativeWindows();
-				for ( auto pWindow : vWindows )
+				auto pWindow = pUIX->GetNativeWindowByHandle( hWnd );
+				if ( pWindow )
 				{
 					auto pCanvas = pWindow->GetCanvas();
 					if ( pCanvas->PostMsg( msg, wParam, lParam, nullptr ) )
@@ -236,10 +195,12 @@ WindowPtr UIX::CreateStandaloneWindow( vec2i pos, vec2ui size )
 	pNativeWindow->SetStyle( WS_POPUP );
 	pNativeWindow->Create();
 	vNativeWindows.push_back( pNativeWindow );
-	InitializeRendererEx(); // hope this doesn't fail? :P
+	if(!pRender)
+		InitializeRendererEx(); // hope this doesn't fail? :P
 	//auto canvasSize = size;
 	//canvasSize *= vec2ui(2);
 	//pNativeWindow->GetCanvas()->SetSize( { (float)canvasSize.x, (float)canvasSize.y } );
+	pNativeWindow->SetRenderer( pRender );
 	auto pCanvas = pNativeWindow->GetCanvas();
 	pCanvas->SetIsStandalone( true );
 	pCanvas->SetSize( vec2f( size.x - 1.0f, size.y - 1.0f ) );
@@ -307,6 +268,14 @@ NativeWindows UIX::GetNativeWindows()
 	return vNativeWindows;
 }
 
+NativeWindowPtr UIX::GetNativeWindowByHandle( HWND hWnd )
+{
+	for ( auto pWindow : vNativeWindows )
+		if ( pWindow->GetHWND() == hWnd )
+			return pWindow;
+	return NativeWindowPtr(nullptr);
+}
+
 bool UIX::HiJackWndProc()
 {
 	ogWndProc = (WNDPROC)SetWindowLongPtr( hWnd, GWLP_WNDPROC, (uintptr_t)WndProcUIXIn );
@@ -319,9 +288,7 @@ CanvasPtr UIX::CreateCanvas()
 {
 	if ( !pCanvas )
 		this->pCanvas = MakeCanvasPtr( pRender );
-	
-	//dont really think i need this... 
-	//since we're just using the canvas as a parent to everything else for posting messages
+
 	D3DVIEWPORT9 pVP{ 0 };
 	pRender->GetDevice()->GetViewport( &pVP );
 	pCanvas->SetSize( { (float)pVP.Width, (float)pVP.Height } );
