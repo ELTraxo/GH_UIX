@@ -17,7 +17,7 @@ public:
 	void SetSize( const vec2f& size );
 
 	bool IsMoving();
-
+	vec2f GetMouseDownPos();
 	void OnRender();
 	void OnMouseMove( float x, float y );
 	void OnMouseDown( uint button, float x, float y );
@@ -26,7 +26,5 @@ private:
 	bool TitlebarIntersect( float x, float y );
 };
 
-using Window = CXWindow;
-using WindowPtr = std::shared_ptr<Window>;
 #define MakeWindowPtr(pRender) \
 std::make_shared<Window>(pRender)

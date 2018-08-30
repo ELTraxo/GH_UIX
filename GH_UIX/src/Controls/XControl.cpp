@@ -26,6 +26,7 @@ CXControl::CXControl( RenderPtr pRender )
 	this->pMoving = nullptr;
 	this->bUseRect = false;
 	this->rect = RECT{ 0 };
+	this->bStandaloneWindow = false;
 }
 
 
@@ -266,6 +267,16 @@ void CXControl::SetMovingControl( ControlPtr pControl )
 	pMoving = pControl;
 }
 
+void CXControl::SetIsStandalone( bool bStandalone )
+{
+	this->bStandaloneWindow = bStandalone;
+}
+
+bool CXControl::GetIsStandalone()
+{
+	return bStandaloneWindow;
+}
+
 bool CXControl::PointIntersect( float x, float y )
 {
 	makeAbsPos();
@@ -406,6 +417,7 @@ bool CXControl::PostMsg( uint msg, WPARAM wParam, LPARAM lParam, void * pData )
 						}
 					}
 				}
+				return true;
 			}
 			break;
 		}

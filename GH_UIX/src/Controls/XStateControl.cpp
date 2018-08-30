@@ -153,27 +153,43 @@ RadioPtr CXRadio::GetSelected()
 
 void CXRadio::AddRadio( RadioPtr pRadio )
 {
-	if ( pFirstRadio )
+	if ( !pFirstRadio )
+		pFirstRadio = std::dynamic_pointer_cast<Radio>( shared_from_this() );
+
+	if ( !GetNextRadio() )
 	{
-		auto next = pFirstRadio->GetNextRadio();
-		while ( next )
-		{
-			auto temp = next->GetNextRadio();
-			if ( !temp )
-				break;
-			next = temp;
-		}
-		next->SetNextRadio( pRadio );
-		pRadio->SetPrevRadio( next );
-		pRadio->SetFirstRadio( pRadio );
+		SetNextRadio( pRadio );
+		pRadio->SetPrevRadio( std::dynamic_pointer_cast<Radio>( shared_from_this() ) );
+		pRadio->SetFirstRadio( pFirstRadio );
 	}
 	else
 	{
-		pFirstRadio = std::dynamic_pointer_cast<Radio>( shared_from_this() );
-		pFirstRadio->SetNextRadio( pRadio );
-		pRadio->SetPrevRadio( pFirstRadio );
 		pRadio->SetFirstRadio( pFirstRadio );
+		GetNextRadio()->AddRadio( pRadio );
 	}
+
+
+	//if ( pFirstRadio )
+	//{
+	//	auto next = pFirstRadio->GetNextRadio();
+	//	while ( next )
+	//	{
+	//		auto temp = next->GetNextRadio();
+	//		if ( !temp )
+	//			break;
+	//		next = temp;
+	//	}
+	//	next->SetNextRadio( pRadio );
+	//	pRadio->SetPrevRadio( next );
+	//	pRadio->SetFirstRadio( pRadio );
+	//}
+	//else
+	//{
+	//	pFirstRadio = std::dynamic_pointer_cast<Radio>( shared_from_this() );
+	//	pFirstRadio->SetNextRadio( pRadio );
+	//	pRadio->SetPrevRadio( pFirstRadio );
+	//	pRadio->SetFirstRadio( pFirstRadio );
+	//}
 }
 
 
@@ -193,21 +209,21 @@ void CXRadio::OnRender()
 
 void CXRadio::OnMouseDown( uint button, float x, float y )
 {
-	if ( pFirstRadio )
+
+	/*if ( pFirstRadio )
 		pFirstRadio->OnSelect( shared_from_this() );
 	else
-		bState = !bState;
+		bState = !bState;*/
+	pFirstRadio->OnSelect( shared_from_this() );
 }
 
 void CXRadio::OnSelect( ControlPtr pRadio )
 {
-	if ( pRadio )
-	{
-		if ( pRadio.get() == this )
-			bState = true;
-		else
-			bState = false;
-		if ( GetNextRadio() )
-			GetNextRadio()->OnSelect( pRadio );
-	}
+	if ( pRadio.get() == this )
+		bState = true;
+	else
+		bState = false;
+	pSelected = std::dynamic_pointer_cast<Radio>( pRadio );
+	if(GetNextRadio())
+		GetNextRadio()->OnSelect( pRadio );
 }

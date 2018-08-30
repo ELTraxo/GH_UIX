@@ -28,6 +28,7 @@ public:
 
 	// only used in external/standalone apps
 	NativeWindowPtr CreateNativeWindow( vec2i pos, vec2ui size, bool bShow = true );
+	WindowPtr CreateStandaloneWindow( vec2i pos, vec2ui size );
 	NativeWindows GetNativeWindows();
 
 	bool InitializeRenderer();
@@ -50,6 +51,7 @@ public:
 	void Cleanup();
 
 	static LRESULT WINAPI WndProcUIX( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam ); // external
+	static LRESULT WINAPI WndProcUIXSA( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam ); // standalone
 	static LRESULT WINAPI WndProcUIXIn( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam ); //internal
 private:
 	static UIXPtr pUIX;

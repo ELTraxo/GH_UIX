@@ -12,8 +12,16 @@ CXCanvas::~CXCanvas()
 {
 }
 
-void CXCanvas::MakeWindow()
+WindowPtr CXCanvas::MakeWindow()
 {
-	auto pWindow = MakeWindowPtr( pRender );
+	this->pWindow = MakeWindowPtr( pRender );
+	pWindow->SetSize( GetSize() );
 	AddChildControl( pWindow );
+	pWindow->SetIsStandalone( GetIsStandalone() );
+	return pWindow;
+}
+
+WindowPtr CXCanvas::GetWindow()
+{
+	return pWindow;
 }

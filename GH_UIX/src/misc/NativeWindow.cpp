@@ -11,6 +11,9 @@ CNativeWindow::CNativeWindow( HINSTANCE hInstance, WNDPROC pWndProc )
 	this->iY = 0;
 	this->uiWidth = 800;
 	this->uiHeight = 600;
+	this->dwStyle = 0;
+	this->dwStyleEx = 0;
+	this->pCanvas = nullptr;
 }
 
 
@@ -103,6 +106,8 @@ vec2ui CNativeWindow::GetSize()
 void CNativeWindow::SetStyle( DWORD dwStyle )
 {
 	this->dwStyle = dwStyle;
+	SetWindowLongPtr( hWnd, GWL_STYLE, (LONG)dwStyle );
+	SetWindowPos( hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED );
 }
 
 DWORD CNativeWindow::GetStyle()
@@ -136,10 +141,10 @@ bool CNativeWindow::Create( bool bShow /*=true*/ )
 		RegisterClassUIX();
 
 	hWnd = CreateWindowEx( 
-		/*WS_EX_LAYERED | WS_EX_TOPMOST*/NULL,
+		dwStyleEx,
 		UIXCLASS,
 		sTitle.c_str(),
-		WS_OVERLAPPEDWINDOW,
+		dwStyle,
 		iX, iY,
 		uiWidth, uiHeight,
 		NULL, NULL,
@@ -172,7 +177,7 @@ void CNativeWindow::SetRenderer( RenderPtr pRender, bool bCreateSwapchain )
 		pCanvas->PostMsg( WM_SETRENDERER, 0, 0, &pRender );
 	else
 	{
-		pCanvas = MakeControlPtr( pRender );
+		pCanvas = MakeCanvasPtr( pRender );
 		pCanvas->SetSize( { (float)uiWidth, (float)uiHeight } );
 	}
 }
@@ -212,7 +217,7 @@ SurfacePtr CNativeWindow::SetAsRenderTarget()
 	return pSurface;
 }
 
-ControlPtr CNativeWindow::GetCanvas()
+CanvasPtr CNativeWindow::GetCanvas()
 {
 	return pCanvas;
 }

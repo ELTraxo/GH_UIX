@@ -7,12 +7,126 @@ WNDPROC UIX::ogWndProc = nullptr;
 
 LRESULT WINAPI UIX::WndProcUIX( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam )
 {
-	switch( msg )
+	switch ( msg )
 	{
 		case WM_DESTROY:
 		{
 			PostQuitMessage( 0 );
 			break;
+		}
+		default:
+		{
+			if ( pUIX )
+			{
+				auto vWindows = pUIX->GetNativeWindows();
+				for ( auto pWindow : vWindows )
+				{
+					auto pCanvas = pWindow->GetCanvas();
+					if ( pCanvas->PostMsg( msg, wParam, lParam, nullptr ) )
+						break;
+				}
+			}
+		}
+	}
+	return DefWindowProc( hWnd, msg, wParam, lParam );
+}
+
+LRESULT WINAPI UIX::WndProcUIXSA( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam )
+{
+	//case WM_MOUSEMOVE:
+	//case WM_LBUTTONDOWN:
+	//case WM_LBUTTONUP:
+	//{
+	//	if ( pUIX )
+	//	{
+	//		auto vWindows = pUIX->GetNativeWindows();
+	//		for ( auto pWindow : vWindows )
+	//		{
+	//			if ( pWindow->GetCanvas()->GetIsStandalone() )
+	//			{
+	//				switch ( msg )
+	//				{
+	//					case WM_MOUSEMOVE:
+	//					{
+	//						auto xWindow = pWindow->GetCanvas()->GetChildren();
+	//						if ( std::dynamic_pointer_cast<Window>( xWindow )->IsMoving() )
+	//						{
+	//							auto mdp = std::dynamic_pointer_cast<Window>( xWindow )->GetMouseDownPos();
+	//							POINT p{ 0 };
+	//							GetCursorPos( &p );
+	//							int newX = p.x - mdp.x;
+	//							int newY = p.y - mdp.y;
+	//							SetWindowPos( pWindow->GetHWND(), 0, newX, newY, 0, 0, SWP_NOSIZE );
+	//							pWindow->SetPos( { newX, newY } );
+	//						}
+	//						break;
+	//					}
+	//				}
+	//			}
+
+	//			auto pCanvas = pWindow->GetCanvas();
+	//			if ( pCanvas->PostMsg( msg, wParam, lParam, nullptr ) )
+	//				break;
+
+	//		}
+	//		break;
+	//	}
+	//}
+
+
+
+	switch ( msg )
+	{
+		case WM_DESTROY:
+		{
+			PostQuitMessage( 0 );
+			break;
+		}
+		case WM_MOUSEMOVE:
+		{
+			auto vWindows = pUIX->GetNativeWindows();
+			for ( auto pWindow : vWindows )
+			{
+				auto xWindow = pWindow->GetCanvas()->GetChildren();
+				if ( std::dynamic_pointer_cast<Window>( xWindow )->IsMoving() )
+				{
+					auto mdp = std::dynamic_pointer_cast<Window>( xWindow )->GetMouseDownPos();
+					POINT p{ 0 };
+					GetCursorPos( &p );
+					int newX = p.x - mdp.x;
+					int newY = p.y - mdp.y;
+					SetWindowPos( pWindow->GetHWND(), 0, newX, newY, 0, 0, SWP_NOSIZE );
+					pWindow->SetPos( { newX, newY } );
+				}
+			}
+			break;
+		}
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		{
+			if ( pUIX )
+			{
+				auto vWindows = pUIX->GetNativeWindows();
+				for ( auto pWindow : vWindows )
+				{
+					auto pCanvas = pWindow->GetCanvas();
+					if ( pCanvas->PostMsg( msg, wParam, lParam, nullptr ) )
+					{
+						if ( pCanvas->GetWindow() && msg == WM_LBUTTONDOWN )
+						{
+							if ( pCanvas->GetWindow()->IsMoving() )
+								SetCapture( pWindow->GetHWND() );
+						}
+						else
+						{
+							if ( !pCanvas->GetWindow()->IsMoving() )
+								ReleaseCapture();
+						}
+						break;
+					}
+				}
+				break;
+			}
 		}
 		default:
 		{
@@ -103,15 +217,33 @@ NativeWindowPtr UIX::CreateNativeWindow( vec2i pos, vec2ui size, bool bShow )
 	auto pWindow = MakeNativeWindowPtr( hInstance, WndProcUIX );
 	pWindow->SetPos( pos );
 	pWindow->SetSize(size);
-	pWindow->Create( bShow );
 	
 	if ( !vNativeWindows.size() )
 		pWindow->SetStyle( WS_OVERLAPPEDWINDOW );
 	else
 		pWindow->SetStyle( WS_OVERLAPPEDWINDOW | WS_CHILD );
 
+	pWindow->Create( bShow );
 	vNativeWindows.push_back( pWindow );
 	return pWindow;
+}
+
+WindowPtr UIX::CreateStandaloneWindow( vec2i pos, vec2ui size )
+{
+	auto pNativeWindow = MakeNativeWindowPtr( hInstance, WndProcUIXSA );
+	pNativeWindow->SetPos( pos );
+	pNativeWindow->SetSize( size );
+	pNativeWindow->SetStyle( WS_POPUP );
+	pNativeWindow->Create();
+	vNativeWindows.push_back( pNativeWindow );
+	InitializeRendererEx(); // hope this doesn't fail? :P
+	//auto canvasSize = size;
+	//canvasSize *= vec2ui(2);
+	//pNativeWindow->GetCanvas()->SetSize( { (float)canvasSize.x, (float)canvasSize.y } );
+	auto pCanvas = pNativeWindow->GetCanvas();
+	pCanvas->SetIsStandalone( true );
+	pCanvas->SetSize( vec2f( size.x - 1.0f, size.y - 1.0f ) );
+	return pCanvas->MakeWindow();
 }
 
 bool UIX::InitializeRenderer()

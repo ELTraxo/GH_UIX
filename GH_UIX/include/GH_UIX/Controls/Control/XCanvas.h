@@ -3,10 +3,12 @@
 
 class CXCanvas : public CXControlContainer
 {
+	WindowPtr pWindow;
 public:
 	CXCanvas( RenderPtr pRender );
 	~CXCanvas();
-	void MakeWindow();
+	virtual WindowPtr MakeWindow();
+	virtual WindowPtr GetWindow();
 };
 
 #define MakeCanvasPtr(pRender)\

@@ -48,6 +48,11 @@ bool CXWindow::IsMoving()
 	return bDragging;
 }
 
+vec2f CXWindow::GetMouseDownPos()
+{
+	return mousePos;
+}
+
 void CXWindow::OnRender()
 {
 	makeAbsPos();
@@ -68,7 +73,7 @@ void CXWindow::OnRender()
 void CXWindow::OnMouseMove( float x, float y )
 {
 	SetHot(shared_from_this());
-	if ( bDragging )
+	if ( bDragging && !bStandaloneWindow)
 	{
 		makeAbsPos();
 		SetPos( { pos.x + ( x-vAbs.x)-mousePos.x, pos.y + ( y - vAbs.y ) - mousePos.y } );
@@ -87,7 +92,6 @@ void CXWindow::OnMouseDown( uint button, float x, float y )
 		bDragging = true;
 		SetMovingControl( pThis );
 	}
-		
 }
 
 void CXWindow::OnMouseUp( uint button, float x, float y )

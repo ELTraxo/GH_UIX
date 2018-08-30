@@ -38,6 +38,7 @@ protected:
 	ControlPtr pNext;
 	ControlPtr pPrev;
 	ControlPtr pMoving;
+	bool bStandaloneWindow;
 public:
 	CXControl( RenderPtr pRender );
 	~CXControl();
@@ -83,6 +84,9 @@ public:
 	virtual ControlPtr GetPrevControl();
 	virtual void SetMovingControl( ControlPtr pControl );
 	//ControlPtr GetControlPtr();
+
+	virtual void SetIsStandalone( bool bStandalone );
+	virtual bool GetIsStandalone();
 
 	virtual bool PointIntersect( float x, float y );
 
@@ -142,3 +146,6 @@ using SliderPtr = std::shared_ptr<Slider>;
 class CXCanvas;
 using Canvas = CXCanvas;
 using CanvasPtr = std::shared_ptr<Canvas>;
+class CXWindow;
+using Window = CXWindow;
+using WindowPtr = std::shared_ptr<Window>;

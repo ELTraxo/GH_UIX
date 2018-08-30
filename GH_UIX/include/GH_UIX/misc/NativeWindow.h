@@ -27,7 +27,7 @@ class CNativeWindow
 	RenderPtr pRender;
 	SwapChainPtr pSwapchain;
 	SurfacePtr pSurface;
-	ControlPtr pCanvas;
+	CanvasPtr pCanvas;
 
 public:
 	CNativeWindow( HINSTANCE hInstance, WNDPROC pWndProc );
@@ -67,7 +67,7 @@ public:
 	void SetSwapchain( SwapChainPtr pSwapchain );
 	SwapChainPtr GetSwapchain();
 	SurfacePtr SetAsRenderTarget();
-	ControlPtr GetCanvas();
+	CanvasPtr GetCanvas();
 private:
 	void CreateSwapchain();
 	void RegisterClassUIX();
