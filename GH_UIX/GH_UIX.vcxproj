@@ -69,17 +69,32 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Controls\Control;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Memory;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Render;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\misc;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Controls;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -87,10 +102,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Controls\Control;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Memory;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Render;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\misc;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Controls;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -100,12 +119,16 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Controls\Control;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Memory;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Render;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\misc;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Controls;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -115,27 +138,87 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Controls\Control;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Memory;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Render;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\misc;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX\Controls;X:\My Programs\C++ Projects\GH_UIX\GH_UIX\include\GH_UIX;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <ClInclude Include="include\GH_UIX\Controls\Controls.h" />
+    <ClInclude Include="include\GH_UIX\misc\error.h" />
+    <ClInclude Include="include\GH_UIX\Render\Font.h" />
+    <ClInclude Include="include\GH_UIX\targetver.h" />
+    <ClInclude Include="include\GH_UIX\Memory\Memory.h" />
+    <ClInclude Include="include\GH_UIX\Memory\MemoryIn.h" />
+    <ClInclude Include="include\GH_UIX\misc\NativeWindow.h" />
+    <ClInclude Include="include\GH_UIX\Render\Primitive.h" />
+    <ClInclude Include="include\GH_UIX\Render\Render.h" />
+    <ClInclude Include="include\GH_UIX\Render\Renderable.h" />
+    <ClInclude Include="include\GH_UIX\Render\RenderList.h" />
+    <ClInclude Include="include\GH_UIX\Render\Sprite.h" />
+    <ClInclude Include="include\GH_UIX\Render\Text.h" />
+    <ClInclude Include="include\GH_UIX\Render\Texture.h" />
+    <ClInclude Include="include\GH_UIX\Render\TypesDX9.h" />
+    <ClInclude Include="include\GH_UIX\TypesUIX.h" />
+    <ClInclude Include="include\GH_UIX\UIX.h" />
+    <ClInclude Include="include\GH_UIX\misc\utility.h" />
+    <ClInclude Include="include\GH_UIX\misc\vec2.h" />
+    <ClInclude Include="include\GH_UIX\misc\vec3.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XButton.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XCanvas.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XControl.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XControlContainer.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XDropdown.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XGroupbox.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XLabel.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XListBox.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XScrollbar.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XSlider.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XStateControl.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XTabControl.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XTextbox.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="src\misc\error.cpp" />
+    <ClCompile Include="src\Render\Font.cpp" />
+    <ClCompile Include="src\Memory\MemoryIn.cpp" />
+    <ClCompile Include="src\misc\NativeWindow.cpp" />
+    <ClCompile Include="src\Render\Primitive.cpp" />
+    <ClCompile Include="src\Render\Render.cpp" />
+    <ClCompile Include="src\Render\Renderable.cpp" />
+    <ClCompile Include="src\Render\RenderList.cpp" />
+    <ClCompile Include="src\Render\Sprite.cpp" />
+    <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Render\Text.cpp" />
+    <ClCompile Include="src\Render\Texture.cpp" />
+    <ClCompile Include="src\UIX.cpp" />
+    <ClCompile Include="src\misc\utility.cpp" />
+    <ClCompile Include="src\Controls\XButton.cpp" />
+    <ClCompile Include="src\Controls\XCanvas.cpp" />
+    <ClCompile Include="src\Controls\XControl.cpp" />
+    <ClCompile Include="src\Controls\XControlContainer.cpp" />
+    <ClCompile Include="src\Controls\XDropdown.cpp" />
+    <ClCompile Include="src\Controls\XGroupbox.cpp" />
+    <ClCompile Include="src\Controls\XLabel.cpp" />
+    <ClCompile Include="src\Controls\XListBox.cpp" />
+    <ClCompile Include="src\Controls\XScrollbar.cpp" />
+    <ClCompile Include="src\Controls\XSlider.cpp" />
+    <ClCompile Include="src\Controls\XStateControl.cpp" />
+    <ClCompile Include="src\Controls\XTabControl.cpp" />
+    <ClCompile Include="src\Controls\XTextbox.cpp" />
+    <ClCompile Include="src\Controls\XWindow.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
