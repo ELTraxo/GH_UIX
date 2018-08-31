@@ -184,6 +184,7 @@
     <ClInclude Include="include\GH_UIX\Controls\Control\XTabControl.h" />
     <ClInclude Include="include\GH_UIX\Controls\Control\XTextbox.h" />
     <ClInclude Include="include\GH_UIX\Controls\Control\XWindow.h" />
+    <ClInclude Include="include\GH_UIX\Controls\Control\XTimer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\misc\error.cpp" />
@@ -219,6 +220,7 @@
     <ClCompile Include="src\Controls\XTabControl.cpp" />
     <ClCompile Include="src\Controls\XTextbox.cpp" />
     <ClCompile Include="src\Controls\XWindow.cpp" />
+    <ClCompile Include="src\Controls\XTimer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

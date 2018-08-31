@@ -120,6 +120,9 @@
     <ClInclude Include="include\GH_UIX\TypesUIX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\GH_UIX\Controls\Control\XTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -204,6 +207,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Memory\MemoryIn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Controls\XTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
