@@ -13,6 +13,15 @@ using ControlPtr = std::shared_ptr<CXControl>;
 #define MakeControlPtr(pRender) \
 std::make_shared<CXControl>(pRender)
 
+enum class XCallbackEvent
+{
+	LBUTTONDOWN
+};
+
+using XCallbackFunction = void( *)( ControlPtr pControl, void* pData );
+using CallbackEventMap = std::map<XCallbackEvent, XCallbackFunction>;
+using CallbackEventDataMap = std::map<XCallbackEvent, void*>;
+
 class CXControl : public std::enable_shared_from_this<CXControl>
 {
 protected:
@@ -39,6 +48,10 @@ protected:
 	ControlPtr pPrev;
 	ControlPtr pMoving;
 	bool bStandaloneWindow;
+
+	CallbackEventMap EventCallbacks;
+	CallbackEventDataMap EventCallbackData;
+
 public:
 	CXControl( RenderPtr pRender );
 	~CXControl();
@@ -67,11 +80,11 @@ public:
 	virtual void SetVisible( bool isVisible );
 	virtual bool GetVisible();
 	virtual void SetHot( ControlPtr pControl );
-	virtual bool GetHot(ControlPtr & pControl);
+	virtual bool GetHot( ControlPtr & pControl );
 	virtual void SetFocused( ControlPtr pControl );
 	virtual bool GetFocused( ControlPtr & pControl );
 
-	virtual void SetRectAbs( const RECT& rect, bool bUseRect=true );
+	virtual void SetRectAbs( const RECT& rect, bool bUseRect = true );
 	virtual RECT GetRectAbs();
 
 	virtual void SetParent( ControlPtr pParent );
@@ -87,6 +100,10 @@ public:
 
 	virtual void SetIsStandalone( bool bStandalone );
 	virtual bool GetIsStandalone();
+
+	virtual void SetEventCallback( XCallbackEvent xEvent, XCallbackFunction xFunction, int pData );
+	virtual void SetEventCallback( XCallbackEvent xEvent, XCallbackFunction xFunction, uintptr_t pData );
+	virtual void SetEventCallback( XCallbackEvent xEvent, XCallbackFunction xFunction, void* pData );
 
 	virtual bool PointIntersect( float x, float y );
 

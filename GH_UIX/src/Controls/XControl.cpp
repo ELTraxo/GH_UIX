@@ -277,6 +277,22 @@ bool CXControl::GetIsStandalone()
 	return bStandaloneWindow;
 }
 
+void CXControl::SetEventCallback( XCallbackEvent xEvent, XCallbackFunction xFunction, int pData )
+{
+	SetEventCallback( xEvent, xFunction, (void*)pData );
+}
+
+void CXControl::SetEventCallback( XCallbackEvent xEvent, XCallbackFunction xFunction, uintptr_t pData )
+{
+	SetEventCallback( xEvent, xFunction, (void*)pData );
+}
+
+void CXControl::SetEventCallback( XCallbackEvent xEvent, XCallbackFunction xFunction, void * pData )
+{
+	EventCallbacks[ xEvent ] = xFunction;
+	EventCallbackData[ xEvent ] = pData;
+}
+
 bool CXControl::PointIntersect( float x, float y )
 {
 	makeAbsPos();
@@ -408,6 +424,8 @@ bool CXControl::PostMsg( uint msg, WPARAM wParam, LPARAM lParam, void * pData )
 						case WM_LBUTTONDOWN:
 						{
 							OnMouseDown( wParam, (float)GET_X_LPARAM( lParam ), (float)GET_Y_LPARAM( lParam ) );
+							if ( EventCallbacks[ XCallbackEvent::LBUTTONDOWN ] )
+								EventCallbacks[ XCallbackEvent::LBUTTONDOWN ]( shared_from_this(), EventCallbackData[ XCallbackEvent::LBUTTONDOWN ] );
 							return true;
 						}
 						case WM_MOUSEHWHEEL:

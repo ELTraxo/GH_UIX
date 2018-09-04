@@ -14,6 +14,65 @@ LRESULT WINAPI UIX::WndProcUIX( HWND hWnd, uint msg, WPARAM wParam, LPARAM lPara
 			PostQuitMessage( 0 );
 			break;
 		}
+		case WM_INPUT:
+		{
+			UINT dwSize;
+
+			GetRawInputData( (HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize,
+				sizeof( RAWINPUTHEADER ) );
+			LPBYTE lpb = new BYTE[ dwSize ];
+			if ( lpb == NULL )
+			{
+				return 0;
+			}
+			delete lpb;
+			break;
+		}
+		case WM_MOUSEMOVE:
+		{
+			auto vWindows = pUIX->GetNativeWindows();
+			for ( auto pWindow : vWindows )
+			{
+				auto xWindow = pWindow->GetCanvas()->GetChildren();
+				if ( xWindow )
+				{	// if the first child of a canvas isn't a window...
+					if ( std::dynamic_pointer_cast<Window>( xWindow )->IsMoving() ) // this might be an issue.
+					{
+						xWindow->PostMsg( msg, wParam, lParam, nullptr );
+						break;
+					}
+				}
+			}
+		}
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		{
+			if ( pUIX )
+			{
+				//auto vWindows = pUIX->GetNativeWindows();
+				auto pWindow = pUIX->GetNativeWindowByHandle( hWnd );
+				if ( pWindow )
+				{
+					auto pCanvas = pWindow->GetCanvas();
+					if ( pCanvas->PostMsg( msg, wParam, lParam, nullptr ) )
+					{
+						if ( pCanvas->GetWindow() && msg == WM_LBUTTONDOWN )
+						{
+							if ( pCanvas->GetWindow()->IsMoving() )
+								SetCapture( pWindow->GetHWND() );
+						}
+						else
+						{
+							if ( pCanvas->GetWindow() )
+								if ( !pCanvas->GetWindow()->IsMoving() )
+									ReleaseCapture();
+						}
+						break;
+					}
+				}
+				break;
+			}
+		}
 		default:
 		{
 			if ( pUIX )
@@ -22,8 +81,11 @@ LRESULT WINAPI UIX::WndProcUIX( HWND hWnd, uint msg, WPARAM wParam, LPARAM lPara
 				for ( auto pWindow : vWindows )
 				{
 					auto pCanvas = pWindow->GetCanvas();
-					if ( pCanvas->PostMsg( msg, wParam, lParam, nullptr ) )
-						break;
+					if ( pCanvas )
+					{
+						if ( pCanvas->PostMsg( msg, wParam, lParam, nullptr ) )
+							break;
+					}
 				}
 			}
 		}
@@ -46,15 +108,18 @@ LRESULT WINAPI UIX::WndProcUIXSA( HWND hWnd, uint msg, WPARAM wParam, LPARAM lPa
 			for ( auto pWindow : vWindows )
 			{
 				auto xWindow = pWindow->GetCanvas()->GetChildren();
-				if ( std::dynamic_pointer_cast<Window>( xWindow )->IsMoving() )
-				{
-					auto mdp = std::dynamic_pointer_cast<Window>( xWindow )->GetMouseDownPos();
-					POINT p{ 0 };
-					GetCursorPos( &p );
-					int newX = p.x - mdp.x;
-					int newY = p.y - mdp.y;
-					SetWindowPos( pWindow->GetHWND(), 0, newX, newY, 0, 0, SWP_NOSIZE );
-					pWindow->SetPos( { newX, newY } );
+				if ( xWindow )
+				{	// if the first child of a canvas isn't a window...
+					if ( std::dynamic_pointer_cast<Window>( xWindow )->IsMoving() ) // this might be an issue.
+					{
+						auto mdp = std::dynamic_pointer_cast<Window>( xWindow )->GetMouseDownPos();
+						POINT p{ 0 };
+						GetCursorPos( &p );
+						int newX = p.x - (int)mdp.x;
+						int newY = p.y - (int)mdp.y;
+						SetWindowPos( pWindow->GetHWND(), 0, newX, newY, 0, 0, SWP_NOSIZE );
+						pWindow->SetPos( { newX, newY } );
+					}
 				}
 			}
 			break;
@@ -64,7 +129,7 @@ LRESULT WINAPI UIX::WndProcUIXSA( HWND hWnd, uint msg, WPARAM wParam, LPARAM lPa
 		{
 			if ( pUIX )
 			{
-				auto vWindows = pUIX->GetNativeWindows();
+				//auto vWindows = pUIX->GetNativeWindows();
 				auto pWindow = pUIX->GetNativeWindowByHandle( hWnd );
 				if ( pWindow )
 				{
@@ -78,8 +143,9 @@ LRESULT WINAPI UIX::WndProcUIXSA( HWND hWnd, uint msg, WPARAM wParam, LPARAM lPa
 						}
 						else
 						{
-							if ( !pCanvas->GetWindow()->IsMoving() )
-								ReleaseCapture();
+							if ( pCanvas->GetWindow() )
+								if ( !pCanvas->GetWindow()->IsMoving() )
+									ReleaseCapture();
 						}
 						break;
 					}
@@ -121,6 +187,7 @@ UIX::UIX( HINSTANCE hInstance )
 	this->hWnd = NULL;
 	this->bInternal = false;
 	this->pCanvas = nullptr;
+	this->colClear = UIX_DEFAULTBG;
 }
 
 UIX::UIX( HINSTANCE hInstance, HWND hWnd )
@@ -129,6 +196,7 @@ UIX::UIX( HINSTANCE hInstance, HWND hWnd )
 	this->hWnd = hWnd;
 	this->bInternal = true;
 	this->pCanvas = nullptr;
+	this->colClear = UIX_DEFAULTBG;
 }
 
 UIX::~UIX()
@@ -205,6 +273,59 @@ WindowPtr UIX::CreateStandaloneWindow( vec2i pos, vec2ui size )
 	pCanvas->SetIsStandalone( true );
 	pCanvas->SetSize( vec2f( size.x - 1.0f, size.y - 1.0f ) );
 	return pCanvas->MakeWindow();
+}
+
+NativeWindowPtr UIX::CreateOverlayWindow( tstring szProcessName )
+{
+	// find process
+	DWORD pid = GetProcessID( szProcessName );
+	if ( !pid )
+	{
+		tstring error = _T( "Failed to find process: " );
+		error += szProcessName;
+		error += _T("\nFailed with error:\n");
+		LastErrorMsgBox( error );
+		return nullptr;
+	}
+
+	// get window handle
+	HWND hTargetWindow = GetWindowFromPID( pid );
+
+	// Create the overlay window and profit?
+	RECT r{ 0 };
+	GetWindowRect( hTargetWindow, &r );
+	RECT rClient{ 0 };
+	GetClientRect( hTargetWindow, &rClient );
+
+	long diff = ( r.bottom - r.top ) - rClient.bottom;
+
+	r.top += diff - 3;
+	r.bottom -= 3;
+	diff = ( r.right - r.left ) - rClient.right;
+
+	r.left += ( diff / 2 );
+	r.right -= ( diff / 2 );
+
+	auto pNative = MakeNativeWindowPtr( hInstance, WndProcUIX );
+	pNative->SetPos( { r.left, r.top } ); 
+	pNative->SetSize( { (uint)r.right - (uint)r.left, (uint)r.bottom - (uint)r.top } ); // don't judge me, kthx
+	pNative->SetStyleEx( WS_EX_LAYERED | WS_EX_TOPMOST );
+	pNative->SetStyle( WS_POPUP );
+	pNative->SetIsOverlay( true );
+	pNative->SetOverlayTarget( hTargetWindow );
+	pNative->Create();
+	
+	vNativeWindows.push_back( pNative );
+
+	if ( !pRender )
+		InitializeRendererEx();
+
+	colClear = UIX_ALPHAKEY;
+
+	auto pCanvas = pNative->GetCanvas();
+	auto size = pNative->GetSize();
+	//pCanvas->SetSize( { float(size.x), float(size.y) } );
+	return pNative;
 }
 
 bool UIX::InitializeRenderer()
@@ -316,7 +437,7 @@ void UIX::RenderFrameEx()
 		auto pRender = pWindow->GetRenderer();
 		auto pDevice = pRender->GetDevice();
 
-		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET, UIX_DEFAULTBG, 1.0f, NULL );
+		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET, colClear, 1.0f, NULL );
 		if ( pDevice->BeginScene() == S_OK )
 		{
 			auto pSurface = pWindow->SetAsRenderTarget();

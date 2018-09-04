@@ -1,4 +1,5 @@
 #pragma once
+#include "TypesUIX.h"
 
 struct WndEnumData
 {
@@ -8,3 +9,6 @@ struct WndEnumData
 
 BOOL WINAPI WndEnumCallback( HWND hWnd, LPARAM lParam );
 HWND GetWindowFromPID( DWORD dwPID );
+
+DWORD GetProcessID( tstring szProcessName );
+uintptr_t GetModuleBase( DWORD dwPID, tstring szModule );

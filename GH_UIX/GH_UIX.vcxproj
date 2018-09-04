@@ -152,7 +152,9 @@
   <ItemGroup>
     <ClInclude Include="include\GH_UIX\Controls\Controls.h" />
     <ClInclude Include="include\GH_UIX\misc\error.h" />
+    <ClInclude Include="include\GH_UIX\misc\vec4.h" />
     <ClInclude Include="include\GH_UIX\Render\Font.h" />
+    <ClInclude Include="include\GH_UIX\stdafx.h" />
     <ClInclude Include="include\GH_UIX\targetver.h" />
     <ClInclude Include="include\GH_UIX\Memory\Memory.h" />
     <ClInclude Include="include\GH_UIX\Memory\MemoryIn.h" />
@@ -185,8 +187,10 @@
     <ClInclude Include="include\GH_UIX\Controls\Control\XTextbox.h" />
     <ClInclude Include="include\GH_UIX\Controls\Control\XWindow.h" />
     <ClInclude Include="include\GH_UIX\Controls\Control\XTimer.h" />
+    <ClInclude Include="include\GH_UIX\Memory\MemEx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Memory\MemEx.cpp" />
     <ClCompile Include="src\misc\error.cpp" />
     <ClCompile Include="src\Render\Font.cpp" />
     <ClCompile Include="src\Memory\MemoryIn.cpp" />

@@ -12,6 +12,8 @@ struct vec3
 	vec3<T> operator+( const vec3<T>& rhs ) const;
 	void operator+=( const vec3<T>& rhs );
 
+	T DistanceTo( const vec3<T>& rhs );
+
 	D3DXVECTOR3 ToDX9Vector();
 };
 
@@ -59,6 +61,15 @@ template<class T>
 inline void vec3<T>::operator+=( const vec3<T> & rhs )
 {
 	this = *this + rhs;
+}
+
+template<class T>
+inline T vec3<T>::DistanceTo( const vec3<T>& rhs )
+{
+	auto dx = ( rhs.x - x ) * ( rhs.x - x );
+	auto dy = ( rhs.y - y ) * ( rhs.y - y );
+	auto dz = ( rhs.z - z ) * ( rhs.z - z );
+	return sqrt( dx + dy + dz );
 }
 
 template<class T>

@@ -114,13 +114,19 @@
     <ClInclude Include="include\GH_UIX\Memory\MemoryIn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\GH_UIX\stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\GH_UIX\TypesUIX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\GH_UIX\Controls\Control\XTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GH_UIX\stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GH_UIX\Memory\MemEx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GH_UIX\misc\vec4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -210,6 +216,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Controls\XTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Memory\MemEx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

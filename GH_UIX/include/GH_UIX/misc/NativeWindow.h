@@ -22,6 +22,8 @@ class CNativeWindow
 	DWORD dwStyle;
 	DWORD dwStyleEx;
 	tstring sTitle;
+	bool bIsOverlay;
+	HWND hOverlayTarget;
 
 	//d3d shit
 	RenderPtr pRender;
@@ -56,6 +58,10 @@ public:
 	DWORD GetStyle();
 	void SetStyleEx( DWORD dwStyleEx );
 	DWORD GetStyleEx();
+	void SetIsOverlay( bool bIsOverlay );
+	bool GetIsOverlay();
+	void SetOverlayTarget( HWND hTarget );
+	HWND GetOverlayTarget();
 
 	HWND GetHWND();
 	HINSTANCE GetInstanceHandle();

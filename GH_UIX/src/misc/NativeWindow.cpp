@@ -14,6 +14,8 @@ CNativeWindow::CNativeWindow( HINSTANCE hInstance, WNDPROC pWndProc )
 	this->dwStyle = 0;
 	this->dwStyleEx = 0;
 	this->pCanvas = nullptr;
+	this->bIsOverlay = false;
+	this->hOverlayTarget = NULL;
 }
 
 
@@ -84,7 +86,7 @@ void CNativeWindow::SetHeight( uint h )
 
 uint CNativeWindow::GetHeight()
 {
-	return uiWidth;
+	return uiHeight;
 }
 
 void CNativeWindow::SetSize( uint w, uint h )
@@ -118,11 +120,33 @@ DWORD CNativeWindow::GetStyle()
 void CNativeWindow::SetStyleEx( DWORD dwStyleEx )
 {
 	this->dwStyleEx = dwStyleEx;
+	SetWindowLongPtr( hWnd, GWL_EXSTYLE, (LONG)dwStyleEx );
+	SetWindowPos( hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED );
 }
 
 DWORD CNativeWindow::GetStyleEx()
 {
 	return dwStyleEx;
+}
+
+void CNativeWindow::SetIsOverlay( bool bIsOverlay )
+{
+	this->bIsOverlay = bIsOverlay;
+}
+
+bool CNativeWindow::GetIsOverlay()
+{
+	return bIsOverlay;
+}
+
+void CNativeWindow::SetOverlayTarget( HWND hTarget )
+{
+	this->hOverlayTarget = hTarget;
+}
+
+HWND CNativeWindow::GetOverlayTarget()
+{
+	return this->hOverlayTarget;
 }
 
 HWND CNativeWindow::GetHWND()
@@ -157,7 +181,11 @@ bool CNativeWindow::Create( bool bShow /*=true*/ )
 		return false;
 	}
 
-	//SetLayeredWindowAttributes( hWnd, UIX_ALPHAKEY, 0, LWA_COLORKEY );
+	if ( bIsOverlay )
+	{
+
+		SetLayeredWindowAttributes( hWnd, UIX_ALPHAKEY, 0, LWA_COLORKEY );
+	}
 
 	if(bShow)
 		ShowWindow( hWnd, SW_SHOW );

@@ -3,6 +3,7 @@
 #include "Controls\Controls.h"
 #include "misc\NativeWindow.h"
 #include "misc\utility.h"
+#include "Memory\Memory.h"
 
 using NativeWindows = std::vector<NativeWindowPtr>;
 
@@ -17,6 +18,7 @@ class UIX
 	HWND hWnd;
 	bool bInternal;
 	CanvasPtr pCanvas;
+	Color colClear;
 public:
 	UIX( HINSTANCE hInstance );
 	UIX( HINSTANCE hInstance, HWND hWnd );
@@ -29,6 +31,7 @@ public:
 	// only used in external/standalone apps
 	NativeWindowPtr CreateNativeWindow( vec2i pos, vec2ui size, bool bShow = true );
 	WindowPtr CreateStandaloneWindow( vec2i pos, vec2ui size );
+	NativeWindowPtr CreateOverlayWindow( tstring szProcessName );
 	NativeWindows GetNativeWindows();
 	NativeWindowPtr GetNativeWindowByHandle( HWND hWnd );
 
@@ -47,6 +50,7 @@ public:
 private:
 	void RenderFrameEx();
 	void RenderFrameIn();
+
 
 public:
 	void Cleanup();
