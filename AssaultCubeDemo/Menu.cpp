@@ -44,8 +44,9 @@ void Menu::Create()
 		return;
 
 	pMenu = pOverlay->GetCanvas()->MakeWindow();
-	pMenu->SetSize( { 300,200 } );
-	pMenu->SetPos( 100 );
+	//pMenu->SetSize( { 300,200 } );
+	//pMenu->SetPos( 100 );
+	//pMenu->SetColor( 0xAA000000 );
 
 	auto pCheck = pMenu->AddCheckbox( { 5,20 }, _T( "Inf Ammo" ) );
 	pCheck->SetEventCallback( XCallbackEvent::LBUTTONDOWN, OptionCallback, 0 );

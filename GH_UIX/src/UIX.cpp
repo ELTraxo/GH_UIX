@@ -4,6 +4,94 @@
 
 UIXPtr UIX::pUIX = nullptr;
 WNDPROC UIX::ogWndProc = nullptr;
+LRESULT WINAPI UIX::WndProcUIXOL( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam )
+{
+	switch ( msg )
+	{
+		case WM_DESTROY:
+		{
+			PostQuitMessage( 0 );
+			break;
+		}
+		case WM_INPUT:
+		{
+			UINT dwSize;
+
+			GetRawInputData( (HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize,
+				sizeof( RAWINPUTHEADER ) );
+			LPBYTE lpb = new BYTE[ dwSize ];
+			if ( lpb == NULL )
+			{
+				return 0;
+			}
+			delete lpb;
+			break;
+		}
+		case WM_MOUSEMOVE:
+		{
+			return 0;
+			auto vWindows = pUIX->GetNativeWindows();
+			for ( auto pWindow : vWindows )
+			{
+				auto xWindow = pWindow->GetCanvas()->GetChildren();
+				if ( xWindow )
+				{	// if the first child of a canvas isn't a window...
+					if ( std::dynamic_pointer_cast<Window>( xWindow )->IsMoving() ) // this might be an issue.
+					{
+						xWindow->PostMsg( msg, wParam, lParam, nullptr );
+						break;
+					}
+				}
+			}
+		}
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		{
+			if ( pUIX )
+			{
+				//auto vWindows = pUIX->GetNativeWindows();
+				auto pWindow = pUIX->GetNativeWindowByHandle( hWnd );
+				if ( pWindow )
+				{
+					auto pCanvas = pWindow->GetCanvas();
+					if ( pCanvas->PostMsg( msg, wParam, lParam, nullptr ) )
+					{
+						if ( pCanvas->GetWindow() && msg == WM_LBUTTONDOWN )
+						{
+							if ( pCanvas->GetWindow()->IsMoving() )
+								SetCapture( pWindow->GetHWND() );
+						}
+						else
+						{
+							if ( pCanvas->GetWindow() )
+								if ( !pCanvas->GetWindow()->IsMoving() )
+									ReleaseCapture();
+						}
+						break;
+					}
+				}
+				break;
+			}
+		}
+		default:
+		{
+			if ( pUIX )
+			{
+				auto vWindows = pUIX->GetNativeWindows();
+				for ( auto pWindow : vWindows )
+				{
+					auto pCanvas = pWindow->GetCanvas();
+					if ( pCanvas )
+					{
+						if ( pCanvas->PostMsg( msg, wParam, lParam, nullptr ) )
+							break;
+					}
+				}
+			}
+		}
+	}
+	return DefWindowProc( hWnd, msg, wParam, lParam );
+}
 
 LRESULT WINAPI UIX::WndProcUIX( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam )
 {
@@ -255,7 +343,7 @@ NativeWindowPtr UIX::CreateNativeWindow( vec2i pos, vec2ui size, bool bShow )
 	return pWindow;
 }
 
-WindowPtr UIX::CreateStandaloneWindow( vec2i pos, vec2ui size )
+NativeWindowPtr UIX::CreateStandaloneWindow( vec2i pos, vec2ui size )
 {
 	auto pNativeWindow = MakeNativeWindowPtr( hInstance, WndProcUIXSA );
 	pNativeWindow->SetPos( pos );
@@ -263,16 +351,20 @@ WindowPtr UIX::CreateStandaloneWindow( vec2i pos, vec2ui size )
 	pNativeWindow->SetStyle( WS_POPUP );
 	pNativeWindow->Create();
 	vNativeWindows.push_back( pNativeWindow );
-	if(!pRender)
+	if ( !pRender )
+	{
 		InitializeRendererEx(); // hope this doesn't fail? :P
+		pNativeWindow->SetRenderer( pRender );
+	}
+	else
+		pNativeWindow->SetRenderer( pRender, true );
 	//auto canvasSize = size;
 	//canvasSize *= vec2ui(2);
 	//pNativeWindow->GetCanvas()->SetSize( { (float)canvasSize.x, (float)canvasSize.y } );
-	pNativeWindow->SetRenderer( pRender );
 	auto pCanvas = pNativeWindow->GetCanvas();
 	pCanvas->SetIsStandalone( true );
 	pCanvas->SetSize( vec2f( size.x - 1.0f, size.y - 1.0f ) );
-	return pCanvas->MakeWindow();
+	return pNativeWindow;
 }
 
 NativeWindowPtr UIX::CreateOverlayWindow( tstring szProcessName )
@@ -306,7 +398,7 @@ NativeWindowPtr UIX::CreateOverlayWindow( tstring szProcessName )
 	r.left += ( diff / 2 );
 	r.right -= ( diff / 2 );
 
-	auto pNative = MakeNativeWindowPtr( hInstance, WndProcUIX );
+	auto pNative = MakeNativeWindowPtr( hInstance, WndProcUIXOL );
 	pNative->SetPos( { r.left, r.top } ); 
 	pNative->SetSize( { (uint)r.right - (uint)r.left, (uint)r.bottom - (uint)r.top } ); // don't judge me, kthx
 	pNative->SetStyleEx( WS_EX_LAYERED | WS_EX_TOPMOST );
@@ -319,6 +411,11 @@ NativeWindowPtr UIX::CreateOverlayWindow( tstring szProcessName )
 
 	if ( !pRender )
 		InitializeRendererEx();
+	else
+	{
+		auto pDevice = pRender->GetDevice();
+		pNative->SetRenderer( MakeRendererPtr(pDevice), true );
+	}
 
 	colClear = UIX_ALPHAKEY;
 

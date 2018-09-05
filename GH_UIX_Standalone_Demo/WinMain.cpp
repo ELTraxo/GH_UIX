@@ -3,8 +3,10 @@
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
 {
 	auto uix = UIX::Create( hInstance, false );
-	auto pWindow = uix->CreateStandaloneWindow( { 5,50 }, { 400,300 } );
-	auto pWindow2 = uix->CreateStandaloneWindow( { 415,50 }, { 400,300 } );
+	auto pNativeWindow = uix->CreateStandaloneWindow( { 5,50 }, { 400,300 } );
+	auto pNativeWindow2 = uix->CreateStandaloneWindow( { 415,50 }, { 400,300 } );
+	auto pWindow = pNativeWindow->GetCanvas()->MakeWindow();
+	auto pWindow2 = pNativeWindow2->GetCanvas()->MakeWindow();
 
 	if ( pWindow )
 	{

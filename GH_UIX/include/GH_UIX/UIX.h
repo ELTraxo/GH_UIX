@@ -30,7 +30,7 @@ public:
 
 	// only used in external/standalone apps
 	NativeWindowPtr CreateNativeWindow( vec2i pos, vec2ui size, bool bShow = true );
-	WindowPtr CreateStandaloneWindow( vec2i pos, vec2ui size );
+	NativeWindowPtr CreateStandaloneWindow( vec2i pos, vec2ui size );
 	NativeWindowPtr CreateOverlayWindow( tstring szProcessName );
 	NativeWindows GetNativeWindows();
 	NativeWindowPtr GetNativeWindowByHandle( HWND hWnd );
@@ -56,6 +56,7 @@ public:
 	void Cleanup();
 
 	static LRESULT WINAPI WndProcUIX( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam ); // external
+	static LRESULT WINAPI WndProcUIXOL( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam ); // overlay
 	static LRESULT WINAPI WndProcUIXSA( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam ); // standalone
 	static LRESULT WINAPI WndProcUIXIn( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam ); //internal
 private:

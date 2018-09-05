@@ -183,7 +183,6 @@ bool CNativeWindow::Create( bool bShow /*=true*/ )
 
 	if ( bIsOverlay )
 	{
-
 		SetLayeredWindowAttributes( hWnd, UIX_ALPHAKEY, 0, LWA_COLORKEY );
 	}
 

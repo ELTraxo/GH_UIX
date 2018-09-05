@@ -76,13 +76,3 @@ public:
 	WeaponEnt* pCurrWeapon; //0x0378 
 	char pad_0x037C[ 0x88 ]; //0x037C
 }; //Size=0x0404
-
-struct PlayerEntStripped
-{
-	vec3f vHead;
-	vec3f vPos;
-	vec2f vView;
-	int iHealth;
-	int iArmor;
-	char szName[16];
-};

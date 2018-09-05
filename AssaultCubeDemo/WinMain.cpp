@@ -1,32 +1,25 @@
 #include "includes.h"
 #include "Menu.h"
 
-#define PROCNAME _T("ac_client.exe")
 
-Options O;
-MemEx* pMem = nullptr;
 
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
 {
 	auto uix = UIX::Create( hInstance, false );
+	auto pMenuWindow = uix->CreateStandaloneWindow( 15, { 300,200 } );
 	auto pOverlay = uix->CreateOverlayWindow( PROCNAME );
-
-	if ( pOverlay )
+	
+	if ( pOverlay && pMenuWindow)
 	{
-		pMem = new MemEx( PROCNAME );
-		pMem->Open();
-
-		G.pClientBase = GetModuleBase( pMem->GetPID(), PROCNAME );
-		G.pLocalPlayer = G.pClientBase + G.pPlayerOffset;
-		G.pViewMatrix = G.pClientBase + G.pViewMatrixOffset;
-		G.pEntities = G.pLocalPlayer + 4;
-		G.WindowWidth = pOverlay->GetWidth();
-		G.WindowHeight = pOverlay->GetHeight();
-
-		auto pRender = pOverlay->GetRenderer();
-		Menu menu( pOverlay );
+		Menu menu( pMenuWindow );
 		menu.Create();
 		auto pWindow = menu.GetWindowPtr();
+		auto pRender = pOverlay->GetRenderer();
+
+		hax::Initialize( pOverlay );
+
+		G.WindowWidth = pOverlay->GetWidth();
+		G.WindowHeight = pOverlay->GetHeight();		
 
 		//main loop
 		MSG m;
@@ -53,10 +46,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 			if ( m.message == WM_QUIT )
 				break;
 			
-			pOverlay->GetCanvas()->PostMsg( WM_RENDER, 0, 0, 0 );
-			hax::UpdateEntities();
-			hax::Aimbot();
-			hax::ESP(pRender);
+			hax::Run();
 			uix->RenderFrame();
 		}
 
