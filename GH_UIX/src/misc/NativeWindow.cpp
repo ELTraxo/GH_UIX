@@ -16,6 +16,8 @@ CNativeWindow::CNativeWindow( HINSTANCE hInstance, WNDPROC pWndProc )
 	this->pCanvas = nullptr;
 	this->bIsOverlay = false;
 	this->hOverlayTarget = NULL;
+	this->pSurface = nullptr;
+	this->pSwapchain = nullptr;
 }
 
 
@@ -105,6 +107,16 @@ vec2ui CNativeWindow::GetSize()
 	return vec2ui(uiWidth, uiHeight);
 }
 
+void CNativeWindow::SetClass( tstring szClass )
+{
+	this->szClass = szClass;
+}
+
+tstring CNativeWindow::GetClass()
+{
+	return szClass;
+}
+
 void CNativeWindow::SetStyle( DWORD dwStyle )
 {
 	this->dwStyle = dwStyle;
@@ -161,7 +173,7 @@ HINSTANCE CNativeWindow::GetInstanceHandle()
 
 bool CNativeWindow::Create( bool bShow /*=true*/ )
 {
-	if(!CNativeWindow::bRegistered)
+	//if(!CNativeWindow::bRegistered)
 		RegisterClassUIX();
 
 	hWnd = CreateWindowEx( 
@@ -171,7 +183,8 @@ bool CNativeWindow::Create( bool bShow /*=true*/ )
 		dwStyle,
 		iX, iY,
 		uiWidth, uiHeight,
-		NULL, NULL,
+		NULL, 
+		NULL,
 		hInstance,
 		NULL );
 	
@@ -183,7 +196,7 @@ bool CNativeWindow::Create( bool bShow /*=true*/ )
 
 	if ( bIsOverlay )
 	{
-		SetLayeredWindowAttributes( hWnd, UIX_ALPHAKEY, 0, LWA_COLORKEY );
+		SetLayeredWindowAttributes( hWnd, RGB( 255, 0, 255 ), 0xFF, LWA_COLORKEY | LWA_ALPHA );
 	}
 
 	if(bShow)
@@ -239,7 +252,8 @@ SwapChainPtr CNativeWindow::GetSwapchain()
 SurfacePtr CNativeWindow::SetAsRenderTarget()
 {
 	auto pDevice = this->pRender->GetDevice();
-	pSwapchain->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &pSurface );
+	if(!pSurface)
+		pSwapchain->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &pSurface );
 	pDevice->SetRenderTarget( 0, pSurface );
 	return pSurface;
 }
@@ -258,8 +272,9 @@ void CNativeWindow::RegisterClassUIX()
 	wc.lpfnWndProc = pWndProc;
 	wc.hInstance = hInstance;
 	wc.hCursor = LoadCursor( NULL, IDC_ARROW );
-	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
-	wc.lpszClassName = UIXCLASS;
+	auto color = RGB( 0xff, 0, 0xff );
+	wc.hbrBackground = (HBRUSH)CreateSolidBrush( color );
+	wc.lpszClassName = szClass.c_str();
 
 	RegisterClassEx( &wc );
 

@@ -10,7 +10,7 @@ CRender::CRender( DevicePtr pDevice )
 	this->pDevice = pDevice;
 	this->hWnd = NULL;
 	this->pStateBlock = nullptr;
-	//this->pSprite = std::make_shared<Sprite>( pDevice );
+	this->pSprite = std::make_shared<Sprite>( pDevice );
 	CFontManager::Initialize( pDevice );
 }
 

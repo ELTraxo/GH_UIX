@@ -5,6 +5,20 @@
 #include "misc\utility.h"
 #include "Memory\Memory.h"
 
+using _IHKCallback = LRESULT( CALLBACK * )( WPARAM wParam, LPARAM lParam );
+//extern _IHKCallback IHKCallback;
+using _SetKeyboardHookCallback = void( WINAPI* )( _IHKCallback pCallback );
+
+using _WPCallback = LRESULT( CALLBACK * )( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
+//extern _WPCallback WPCallback;
+using _SetWndProcHookCallback = void( WINAPI* )( _WPCallback pCallback );
+
+using _CBTCallback = LRESULT( CALLBACK * )( int nCode, WPARAM wParam, LPARAM lParam );
+using _SetCBTHookCallback = void( WINAPI* )( _CBTCallback pCallback );
+
+using _GMCallback = LRESULT( CALLBACK * )( WPARAM wParam, MSG * pMsg );
+using _SetGetMessageCallback = void( WINAPI* )( _GMCallback pCallback );
+
 using NativeWindows = std::vector<NativeWindowPtr>;
 
 class UIX;
@@ -43,6 +57,8 @@ private:
 	bool InitializeRendererIn(DevicePtr pDevice);
 
 public:
+	RECT GetOverlayRect( HWND hTarget );
+	void UpdateOverlayRect( NativeWindowPtr pNative, RECT & r );
 	bool HiJackWndProc();
 	CanvasPtr CreateCanvas();
 	CanvasPtr GetCanvas();

@@ -1,4 +1,0 @@
-LIBRARY
-EXPORTS
-	InputHook_Keyboard @1
-	SetKeyboardHookCallback @2

@@ -1,4 +1,4 @@
-#include "Menu.h"
+﻿#include "Menu.h"
 
 void OptionCallback( ControlPtr pControl, void* pData )
 {
@@ -42,13 +42,18 @@ void Menu::Create()
 {
 	if ( !pOverlay )
 		return;
+	TexturePtr pTexture = MakeTexturePtr( pOverlay->GetRenderer()->GetDevice() );
+	if ( !pTexture->CreateFromFile( _T( "../AssaultCubeDemo/rsrc/menubg.png" ) ) )
+		LastErrorMsgBox( L"Loading texture..." );
 
 	pMenu = pOverlay->GetCanvas()->MakeWindow();
+	
 	//pMenu->SetSize( { 300,200 } );
 	//pMenu->SetPos( 100 );
 	//pMenu->SetColor( 0xAA000000 );
+	pMenu->SetTexture( pTexture );
 
-	auto pCheck = pMenu->AddCheckbox( { 5,20 }, _T( "Inf Ammo" ) );
+	auto pCheck = pMenu->AddCheckbox( { 5,20 }, _T( "Inf Ammo 😀✔✗➤" ) );
 	pCheck->SetEventCallback( XCallbackEvent::LBUTTONDOWN, OptionCallback, 0 );
 	pCheck = pMenu->AddCheckbox( { 5,35 }, _T( "Aimbot" ) );
 	pCheck->SetEventCallback( XCallbackEvent::LBUTTONDOWN, OptionCallback, 1 );

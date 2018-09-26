@@ -6,6 +6,8 @@ UIXPtr UIX::pUIX = nullptr;
 WNDPROC UIX::ogWndProc = nullptr;
 LRESULT WINAPI UIX::WndProcUIXOL( HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam )
 {
+	int x = 0;
+	x += 1;
 	switch ( msg )
 	{
 		case WM_DESTROY:
@@ -13,6 +15,8 @@ LRESULT WINAPI UIX::WndProcUIXOL( HWND hWnd, uint msg, WPARAM wParam, LPARAM lPa
 			PostQuitMessage( 0 );
 			break;
 		}
+		case WM_NCHITTEST:
+			return 0;
 		case WM_INPUT:
 		{
 			UINT dwSize;
@@ -348,7 +352,13 @@ NativeWindowPtr UIX::CreateStandaloneWindow( vec2i pos, vec2ui size )
 	auto pNativeWindow = MakeNativeWindowPtr( hInstance, WndProcUIXSA );
 	pNativeWindow->SetPos( pos );
 	pNativeWindow->SetSize( size );
-	pNativeWindow->SetStyle( WS_POPUP );
+	pNativeWindow->SetStyleEx( WS_EX_COMPOSITED | WS_EX_LAYERED ); // 
+	pNativeWindow->SetIsOverlay( true );	    // 
+	if(!vNativeWindows.size() )
+		pNativeWindow->SetStyle( WS_POPUP );
+	else
+		pNativeWindow->SetStyle( WS_POPUP | WS_CHILD);
+	pNativeWindow->SetClass( UIXCLASS );
 	pNativeWindow->Create();
 	vNativeWindows.push_back( pNativeWindow );
 	if ( !pRender )
@@ -357,7 +367,9 @@ NativeWindowPtr UIX::CreateStandaloneWindow( vec2i pos, vec2ui size )
 		pNativeWindow->SetRenderer( pRender );
 	}
 	else
+	{
 		pNativeWindow->SetRenderer( pRender, true );
+	}
 	//auto canvasSize = size;
 	//canvasSize *= vec2ui(2);
 	//pNativeWindow->GetCanvas()->SetSize( { (float)canvasSize.x, (float)canvasSize.y } );
@@ -384,28 +396,21 @@ NativeWindowPtr UIX::CreateOverlayWindow( tstring szProcessName )
 	HWND hTargetWindow = GetWindowFromPID( pid );
 
 	// Create the overlay window and profit?
-	RECT r{ 0 };
-	GetWindowRect( hTargetWindow, &r );
-	RECT rClient{ 0 };
-	GetClientRect( hTargetWindow, &rClient );
-
-	long diff = ( r.bottom - r.top ) - rClient.bottom;
-
-	r.top += diff - 3;
-	r.bottom -= 3;
-	diff = ( r.right - r.left ) - rClient.right;
-
-	r.left += ( diff / 2 );
-	r.right -= ( diff / 2 );
+	RECT r = GetOverlayRect( hTargetWindow );
 
 	auto pNative = MakeNativeWindowPtr( hInstance, WndProcUIXOL );
 	pNative->SetPos( { r.left, r.top } ); 
 	pNative->SetSize( { (uint)r.right - (uint)r.left, (uint)r.bottom - (uint)r.top } ); // don't judge me, kthx
-	pNative->SetStyleEx( WS_EX_LAYERED | WS_EX_TOPMOST );
-	pNative->SetStyle( WS_POPUP );
+	pNative->SetStyleEx( WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TOPMOST );
+	pNative->SetStyle( WS_POPUP | WS_VISIBLE );
 	pNative->SetIsOverlay( true );
 	pNative->SetOverlayTarget( hTargetWindow );
+	pNative->SetClass( _T( "UIXOVERLAY" ) );
 	pNative->Create();
+
+	//HRGN hRgn = CreateRectRgn( 0, 0, pNative->GetWidth(), pNative->GetHeight() );
+	//SetWindowRgn( pNative->GetHWND(), hRgn, true );
+	//GetWindowRgn( pNative->GetHWND(), hRgn );
 	
 	vNativeWindows.push_back( pNative );
 
@@ -494,6 +499,31 @@ NativeWindowPtr UIX::GetNativeWindowByHandle( HWND hWnd )
 	return NativeWindowPtr(nullptr);
 }
 
+RECT UIX::GetOverlayRect( HWND hTarget )
+{
+	RECT r{ 0 };
+	GetWindowRect( hTarget, &r );
+	RECT rClient{ 0 };
+	GetClientRect( hTarget, &rClient );
+
+	long diff = ( r.bottom - r.top ) - rClient.bottom;
+
+	r.top += diff - 3;
+	r.bottom -= 3;
+	diff = ( r.right - r.left ) - rClient.right;
+
+	r.left += ( diff / 2 );
+	r.right -= ( diff / 2 );
+	return r;
+}
+
+void UIX::UpdateOverlayRect( NativeWindowPtr pNative, RECT & r )
+{
+	pNative->SetPos( { r.left, r.top } );
+	pNative->SetSize( { (uint)r.right - (uint)r.left, (uint)r.bottom - (uint)r.top } ); // don't judge me, kthx
+	SetWindowPos( pNative->GetHWND(), NULL, pNative->GetPosX(), pNative->GetPosY(), pNative->GetWidth(), pNative->GetHeight(), SWP_FRAMECHANGED );
+}
+
 bool UIX::HiJackWndProc()
 {
 	ogWndProc = (WNDPROC)SetWindowLongPtr( hWnd, GWLP_WNDPROC, (uintptr_t)WndProcUIXIn );
@@ -534,7 +564,8 @@ void UIX::RenderFrameEx()
 		auto pRender = pWindow->GetRenderer();
 		auto pDevice = pRender->GetDevice();
 
-		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET, colClear, 1.0f, NULL );
+		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET, UIX_ALPHAKEY, 1.0f, NULL );
+		
 		if ( pDevice->BeginScene() == S_OK )
 		{
 			auto pSurface = pWindow->SetAsRenderTarget();
@@ -542,7 +573,8 @@ void UIX::RenderFrameEx()
 			pRender->Render();
 			pDevice->EndScene();
 			pWindow->GetSwapchain()->Present( 0, 0, pWindow->GetHWND(), 0, 0 );
-			safe_release( pSurface );
+			
+			//safe_release( pSurface );
 		}
 	}
 }

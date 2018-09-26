@@ -1,0 +1,11 @@
+LIBRARY
+EXPORTS
+	InputHook_Keyboard			@1
+	SetKeyboardHookCallback		@2
+	SetWndProcHookCallback		@3
+	WndProcHook					@4
+	SetGetMessageHookCallback	@5
+	GetMessageHook				@6
+	WinEventHook				@7
+	CBTHook						@8
+	SetCBTHookCallback			@9

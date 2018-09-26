@@ -13,7 +13,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GH_UIX_Standalone_Demo", "G
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssaultCubeDemo", "AssaultCubeDemo\AssaultCubeDemo.vcxproj", "{AA9497B6-2B9F-440B-8626-8D743BE88E49}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InputHook", "InputHook\InputHook.vcxproj", "{F0233774-166B-4D65-91F8-113CB9538BD8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GHooks", "GHooks\InputHook.vcxproj", "{F0233774-166B-4D65-91F8-113CB9538BD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

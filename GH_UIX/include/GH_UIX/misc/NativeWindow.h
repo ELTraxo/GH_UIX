@@ -30,7 +30,7 @@ class CNativeWindow
 	SwapChainPtr pSwapchain;
 	SurfacePtr pSurface;
 	CanvasPtr pCanvas;
-
+	tstring szClass;
 public:
 	CNativeWindow( HINSTANCE hInstance, WNDPROC pWndProc );
 	~CNativeWindow();
@@ -53,7 +53,8 @@ public:
 	void SetSize( uint w, uint h );
 	void SetSize( vec2ui size );
 	vec2ui GetSize();
-
+	void SetClass( tstring szClass );
+	tstring GetClass();
 	void SetStyle( DWORD dwStyle );
 	DWORD GetStyle();
 	void SetStyleEx( DWORD dwStyleEx );

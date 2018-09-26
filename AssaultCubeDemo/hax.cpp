@@ -69,5 +69,7 @@ void hax::Run()
 {
 	hax::UpdateEntities();
 	aimbot.Run();
-	esp.Run();
+	
+	if( pOverlay->GetOverlayTarget() == GetForegroundWindow() )
+		esp.Run();
 }

@@ -56,10 +56,17 @@ vec2f CXWindow::GetMouseDownPos()
 void CXWindow::OnRender()
 {
 	makeAbsPos();
-	pRender->DrawRect( vAbs, size, bgColor );
-	pRender->DrawBox( vAbs, size, borderWidth, borderColor );
-	pRender->DrawBox( vAbs, sizeTitlebar, borderWidth, borderColor );
-	
+	if ( !pTexture )
+	{
+		pRender->DrawRect( vAbs, size, bgColor );
+		pRender->DrawBox( vAbs, size, borderWidth, borderColor );
+		pRender->DrawBox( vAbs, sizeTitlebar, borderWidth, borderColor );
+	}
+	else
+	{
+		pTexture->SetPos( vAbs );
+		pRender->DrawTexture( pTexture );
+	}
 	RECT r;
 	r.left = (int)(vAbs.x + 1.0f);
 	r.top = (int)vAbs.y;
